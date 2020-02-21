@@ -7,9 +7,11 @@ class ShlinkException implements Exception {
   ShlinkException(this.type, this.title, this.detail, this.status);
 
   factory ShlinkException.fromJson(Map mJson) {
-    return ShlinkException(mJson['type'], mJson['title'], mJson['detail'], mJson['status']);
+    return ShlinkException(
+        mJson['type'], mJson['title'], mJson['detail'], mJson['status']);
   }
 
   @override
-  String toString() => 'ShlinkException{type=$type;title=$title;detail=$detail;status=$status}';
+  String toString() =>
+      'ShlinkException{type=$type;title=$title;detail=$detail;status=$status}';
 }

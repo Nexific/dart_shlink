@@ -7,7 +7,8 @@ class ShortUrl {
   final List<String> tags;
   final ShortUrlMeta meta;
 
-  ShortUrl._(this.shortCode, this.shortUrl, this.longUrl, this.dateCreated, this.visitsCount, this.tags, this.meta);
+  ShortUrl._(this.shortCode, this.shortUrl, this.longUrl, this.dateCreated,
+      this.visitsCount, this.tags, this.meta);
 
   factory ShortUrl.fromJson(Map mJson) {
     Map mMeta = mJson['meta'];
@@ -32,11 +33,19 @@ class ShortUrl {
     List<dynamic> lstRawTags = mJson['tags'];
     List<String> lstTags = lstRawTags.map((t) => '$t').toList();
 
-    return ShortUrl._(mJson['shortCode'], mJson['shortUrl'], mJson['longUrl'], DateTime.parse(mJson['dateCreated']), mJson['visitCount'], lstTags, meta);
+    return ShortUrl._(
+        mJson['shortCode'],
+        mJson['shortUrl'],
+        mJson['longUrl'],
+        DateTime.parse(mJson['dateCreated']),
+        mJson['visitCount'],
+        lstTags,
+        meta);
   }
 
   @override
-  String toString() => 'ShortUrl{code=$shortCode;shortUrl=$shortUrl;longUrl=$longUrl;created=$dateCreated;visits=$visitsCount;tags=$tags;meta=$meta}';
+  String toString() =>
+      'ShortUrl{code=$shortCode;shortUrl=$shortUrl;longUrl=$longUrl;created=$dateCreated;visits=$visitsCount;tags=$tags;meta=$meta}';
 }
 
 class ShortUrlMeta {
@@ -47,5 +56,6 @@ class ShortUrlMeta {
   ShortUrlMeta._(this.validSince, this.validUntil, this.maxVisits);
 
   @override
-  String toString() => 'ShortUrlMeta{validSince=$validSince;validUntil=$validUntil;maxVisits=$maxVisits}';
+  String toString() =>
+      'ShortUrlMeta{validSince=$validSince;validUntil=$validUntil;maxVisits=$maxVisits}';
 }

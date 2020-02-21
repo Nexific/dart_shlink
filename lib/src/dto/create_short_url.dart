@@ -7,11 +7,19 @@ class CreateShortURL {
   final int _maxVisits;
   final bool _findIfExists;
 
-  CreateShortURL._(this._longUrl, this._tags, this._validSince, this._validUntil, this._customSlug, this._maxVisits, this._findIfExists);
+  CreateShortURL._(this._longUrl, this._tags, this._validSince,
+      this._validUntil, this._customSlug, this._maxVisits, this._findIfExists);
 
   /// Create a new short URL from [longUrl] with [tags] valid from [validSince] until [validUntil] with [customSlug] until [maxVisits] and [findIfExists]
-  factory CreateShortURL(String longUrl, {List<String> tags, DateTime validSince, DateTime validUntil, String customSlug, int maxVisits = 0, bool findIfExists = false}) {
-    return CreateShortURL._(longUrl, tags, validSince, validUntil, customSlug, maxVisits, findIfExists);
+  factory CreateShortURL(String longUrl,
+      {List<String> tags,
+      DateTime validSince,
+      DateTime validUntil,
+      String customSlug,
+      int maxVisits = 0,
+      bool findIfExists = false}) {
+    return CreateShortURL._(longUrl, tags, validSince, validUntil, customSlug,
+        maxVisits, findIfExists);
   }
 
   /// Create a new short URL from [longUrl]

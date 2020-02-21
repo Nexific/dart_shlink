@@ -21,10 +21,11 @@ class Shlink {
       mJson.putIfAbsent('domain', () => _domain);
     }
 
-    HttpClientRequest request = await HttpClient().postUrl(Uri.parse('$_url/rest/v1/short-urls'))
-      ..headers.contentType = ContentType.json
-      ..headers.set('X-Api-Key', _apiKey)
-      ..write(jsonEncode(mJson));
+    HttpClientRequest request =
+        await HttpClient().postUrl(Uri.parse('$_url/rest/v1/short-urls'))
+          ..headers.contentType = ContentType.json
+          ..headers.set('X-Api-Key', _apiKey)
+          ..write(jsonEncode(mJson));
 
     HttpClientResponse response = await request.close();
     String sBody = await utf8.decoder.bind(response).single;
