@@ -1,5 +1,7 @@
 A library to access [shlink.io](https://shlink.io) based URL shortener.
 
+[![Build Status](https://travis-ci.org/Nexific/dart_shlink.svg?branch=master)](https://travis-ci.org/Nexific/dart_shlink)
+
 ## Usage
 
 Add the following dependency to the pubspec.yaml
