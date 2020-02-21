@@ -1,5 +1,5 @@
 name: shlink
-description: Library for shlink.io based URL shortener
+description: A Library to manage shlink.io based self-hosted URL shortener.
 version: 0.2.0
 homepage: https://github.com/Nexific/dart_shlink
 
