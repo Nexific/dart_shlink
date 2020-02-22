@@ -6,6 +6,9 @@ import 'dto/create_short_url.dart';
 import 'dto/short_url.dart';
 
 class Shlink {
+  static const _API_PATH = '/rest/v1';
+  static const _HEADER_API_KEY = 'X-Api-Key';
+
   final String _url;
   final String _apiKey;
   final String _domain;
@@ -22,12 +25,37 @@ class Shlink {
     }
 
     HttpClientRequest request =
-        await HttpClient().postUrl(Uri.parse('$_url/rest/v1/short-urls'))
+        await HttpClient().postUrl(Uri.parse('$_url$_API_PATH/short-urls'))
           ..headers.contentType = ContentType.json
-          ..headers.set('X-Api-Key', _apiKey)
+          ..headers.set(_HEADER_API_KEY, _apiKey)
           ..write(jsonEncode(mJson));
 
     HttpClientResponse response = await request.close();
+    String sBody = await utf8.decoder.bind(response).single;
+
+    if (response.statusCode != 200) {
+      throw ShlinkException.fromJson(jsonDecode(sBody));
+    }
+
+    return ShortUrl.fromJson(jsonDecode(sBody));
+  }
+
+  /// Lookup short url information about the [shortCode]
+  Future<ShortUrl> lookup(String shortCode) async {
+    String sUrl = '$_url$_API_PATH/short-urls/$shortCode';
+    if (_domain != null && _domain.isNotEmpty) {
+      sUrl += '?domain=$_domain';
+    }
+
+    HttpClientRequest request = await HttpClient().getUrl(Uri.parse(sUrl))
+    ..headers.contentType = ContentType.json
+    ..headers.set(_HEADER_API_KEY, _apiKey);
+
+    HttpClientResponse response = await request.close();
+    if (response.statusCode == 404) {
+      return null;
+    }
+
     String sBody = await utf8.decoder.bind(response).single;
 
     if (response.statusCode != 200) {
