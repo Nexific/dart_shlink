@@ -14,7 +14,7 @@ class ShortUrl {
 
   factory ShortUrl.fromJson(Map mJson) {
     Map mMeta = mJson['meta'];
-    
+
     ShortUrlMeta meta = ShortUrlMeta.fromJson(mMeta);
 
     List<dynamic> lstRawTags = mJson['tags'];
