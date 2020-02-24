@@ -83,6 +83,34 @@ class Shlink {
       return true;
     }
 
+    if (response.statusCode == 404) {
+      return false;
+    }
+
+    String sBody = await utf8.decoder.bind(response).single;
+    throw ShlinkException.fromJson(response.statusCode, sBody);
+  }
+
+  /// Delete [shortCode]
+  Future<bool> delete(String shortCode) async {
+    String sUrl = '$_url$_API_PATH/short-urls/$shortCode';
+    if (_domain != null && _domain.isNotEmpty) {
+      sUrl += '?domain=$_domain';
+    }
+
+    HttpClientRequest request = await HttpClient().deleteUrl(Uri.parse(sUrl))
+      ..headers.contentType = ContentType.json
+      ..headers.set(_HEADER_API_KEY, _apiKey);
+
+    HttpClientResponse response = await request.close();
+    if (response.statusCode == 204) {
+      return true;
+    }
+
+    if (response.statusCode == 404) {
+      return false;
+    }
+
     String sBody = await utf8.decoder.bind(response).single;
     throw ShlinkException.fromJson(response.statusCode, sBody);
   }
