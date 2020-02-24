@@ -5,6 +5,7 @@ import 'shlink_exception.dart';
 import 'dto/create_short_url.dart';
 import 'dto/meta.dart';
 import 'dto/short_url.dart';
+import 'dto/visit.dart';
 import 'enums/order_field.dart';
 import 'extension/datetime.dart';
 
@@ -212,9 +213,7 @@ class Shlink {
     Map<String, dynamic> mShortUrls = mJson['shortUrls'];
 
     List<dynamic> lstData = mShortUrls['data'];
-    for (dynamic data in lstData) {
-      lstShortUrls.add(ShortUrl.fromJson(data));
-    }
+    lstShortUrls.addAll(lstData.map((u) => ShortUrl.fromJson(u)).toList());
 
     Map<String, dynamic> mPagination = mShortUrls['pagination'];
     if (mPagination['pagesCount'] > mPagination['currentPage']) {
@@ -333,5 +332,65 @@ class Shlink {
 
     String sBody = await utf8.decoder.bind(response).single;
     throw ShlinkException.fromJson(response.statusCode, sBody);
+  }
+
+  /// List the visits of [shortCode] within [startDate] and [endDate]
+  Future<List<Visit>> listVisits(String shortCode,
+      {DateTime startDate, DateTime endDate}) async {
+    return _listVisits(1, shortCode, startDate, endDate);
+  }
+
+  /// Internal visit list method
+  Future<List<Visit>> _listVisits(
+      int iPage, String shortCode, DateTime startDate, DateTime endDate) async {
+    String sUrl = '$_url$_API_PATH/short-urls/${shortCode}/visits?page=$iPage';
+
+    if (_domain != null && _domain.isNotEmpty) {
+      sUrl += '&domain=$_domain';
+    }
+
+    // Start Date
+    if (startDate != null) {
+      sUrl +=
+          '&startDate=${Uri.encodeQueryComponent(startDate.toIso8601StringShlink())}';
+    }
+
+    // End Date
+    if (endDate != null) {
+      sUrl +=
+          '&endDate=${Uri.encodeQueryComponent(endDate.toIso8601StringShlink())}';
+    }
+
+    List<Visit> lstVisits = <Visit>[];
+
+    HttpClientRequest request = await HttpClient().getUrl(Uri.parse(sUrl))
+      ..headers.contentType = ContentType.json
+      ..headers.set(_HEADER_API_KEY, _apiKey);
+
+    HttpClientResponse response = await request.close();
+
+    if (response.statusCode == 404) {
+      return null;
+    }
+
+    String sBody = await utf8.decoder.bind(response).single;
+
+    if (response.statusCode != 200) {
+      throw ShlinkException.fromJson(response.statusCode, sBody);
+    }
+
+    Map<String, dynamic> mJson = jsonDecode(sBody);
+    Map<String, dynamic> mVisits = mJson['visits'];
+
+    List<dynamic> lstVisitsJson = mVisits['data'];
+    lstVisits.addAll(lstVisitsJson.map((v) => Visit.fromJson(v)).toList());
+
+    Map<String, dynamic> mPagination = mVisits['pagination'];
+    if (mPagination['pagesCount'] > mPagination['currentPage']) {
+      lstVisitsJson
+          .addAll(await _listVisits(iPage + 1, shortCode, startDate, endDate));
+    }
+
+    return lstVisits;
   }
 }
