@@ -2,6 +2,7 @@
 
 - List short URL's
 - List tags
+- Add tags
 
 ## 0.2.0
 

@@ -246,4 +246,29 @@ class Shlink {
         .map((t) => t.toString())
         .toList();
   }
+
+  /// Add new Tags from [lstTags]
+  Future<List<String>> addTags(List<String> lstTags) async {
+    String sUrl = '$_url$_API_PATH/tags';
+
+    Map<String, dynamic> mJsonReq = {'tags': lstTags};
+
+    HttpClientRequest request = await HttpClient().postUrl(Uri.parse(sUrl))
+      ..headers.contentType = ContentType.json
+      ..headers.set(_HEADER_API_KEY, _apiKey)
+      ..write(jsonEncode(mJsonReq));
+
+    HttpClientResponse response = await request.close();
+    String sBody = await utf8.decoder.bind(response).single;
+
+    if (response.statusCode != 200) {
+      throw ShlinkException.fromJson(response.statusCode, sBody);
+    }
+
+    Map<String, dynamic> mJsonResp = jsonDecode(sBody);
+
+    return (mJsonResp['tags']['data'] as List<dynamic>)
+        .map((t) => t.toString())
+        .toList();
+  }
 }
