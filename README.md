@@ -10,14 +10,14 @@ Add the following dependency to the pubspec.yaml
 
 ```yaml
 dependencies:
-  ftpclient: ^0.1.0
+  ftpclient: ^0.2.0
 ```
 
 **Development**
 
 ```yaml
 dependencies:
-  ftpclient: ^0.2.0
+  ftpclient: ^0.3.0
 ```
 
 NOTE: This version is not yet available on pub.dev
