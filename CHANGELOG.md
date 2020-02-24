@@ -4,6 +4,7 @@
 - List tags
 - Add tags
 - Rename tag
+- Delete tags
 
 ## 0.2.0
 

@@ -296,4 +296,42 @@ class Shlink {
     String sBody = await utf8.decoder.bind(response).single;
     throw ShlinkException.fromJson(response.statusCode, sBody);
   }
+
+  /// Delete the tags given in [lstTags]
+  Future<bool> deleteTags(List<String> lstTags) async {
+    String sUrl = '$_url$_API_PATH/tags';
+
+    if (lstTags == null && lstTags.isEmpty) {
+      return false;
+    }
+
+    bool bFirst = true;
+    for (String sTag in lstTags) {
+      if (bFirst) {
+        sUrl += '?';
+        bFirst = false;
+      } else {
+        sUrl += '&';
+      }
+
+      sUrl += 'tags[]=${Uri.encodeQueryComponent(sTag)}';
+    }
+
+    HttpClientRequest request = await HttpClient().deleteUrl(Uri.parse(sUrl))
+      ..headers.contentType = ContentType.json
+      ..headers.set(_HEADER_API_KEY, _apiKey);
+
+    HttpClientResponse response = await request.close();
+
+    if (response.statusCode == 204) {
+      return true;
+    }
+
+    if (response.statusCode == 404) {
+      return false;
+    }
+
+    String sBody = await utf8.decoder.bind(response).single;
+    throw ShlinkException.fromJson(response.statusCode, sBody);
+  }
 }
