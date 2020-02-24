@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'shlink_exception.dart';
 import 'dto/create_short_url.dart';
+import 'dto/meta.dart';
 import 'dto/short_url.dart';
 
 class Shlink {
@@ -34,7 +35,7 @@ class Shlink {
     String sBody = await utf8.decoder.bind(response).single;
 
     if (response.statusCode != 200) {
-      throw ShlinkException.fromJson(jsonDecode(sBody));
+      throw ShlinkException.fromJson(response.statusCode, sBody);
     }
 
     return ShortUrl.fromJson(jsonDecode(sBody));
@@ -48,8 +49,8 @@ class Shlink {
     }
 
     HttpClientRequest request = await HttpClient().getUrl(Uri.parse(sUrl))
-    ..headers.contentType = ContentType.json
-    ..headers.set(_HEADER_API_KEY, _apiKey);
+      ..headers.contentType = ContentType.json
+      ..headers.set(_HEADER_API_KEY, _apiKey);
 
     HttpClientResponse response = await request.close();
     if (response.statusCode == 404) {
@@ -59,9 +60,30 @@ class Shlink {
     String sBody = await utf8.decoder.bind(response).single;
 
     if (response.statusCode != 200) {
-      throw ShlinkException.fromJson(jsonDecode(sBody));
+      throw ShlinkException.fromJson(response.statusCode, sBody);
     }
 
     return ShortUrl.fromJson(jsonDecode(sBody));
+  }
+
+  /// Update Metadata [meta] of [shortCode]
+  Future<bool> updateMeta(String shortCode, ShortUrlMeta meta) async {
+    String sUrl = '$_url$_API_PATH/short-urls/$shortCode';
+    if (_domain != null && _domain.isNotEmpty) {
+      sUrl += '?domain=$_domain';
+    }
+
+    HttpClientRequest request = await HttpClient().patchUrl(Uri.parse(sUrl))
+      ..headers.contentType = ContentType.json
+      ..headers.set(_HEADER_API_KEY, _apiKey)
+      ..write(jsonEncode(meta.toJson()));
+
+    HttpClientResponse response = await request.close();
+    if (response.statusCode == 204) {
+      return true;
+    }
+
+    String sBody = await utf8.decoder.bind(response).single;
+    throw ShlinkException.fromJson(response.statusCode, sBody);
   }
 }

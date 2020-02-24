@@ -1,3 +1,5 @@
+import 'meta.dart';
+
 class ShortUrl {
   final String shortCode;
   final String shortUrl;
@@ -12,23 +14,8 @@ class ShortUrl {
 
   factory ShortUrl.fromJson(Map mJson) {
     Map mMeta = mJson['meta'];
-    DateTime validSince;
-    DateTime validUntil;
-    int maxVisits = 0;
-
-    if (mMeta.containsKey('validSince') && mMeta['validSince'] != null) {
-      validSince = DateTime.parse(mMeta['validSince']);
-    }
-
-    if (mMeta.containsKey('validUntil') && mMeta['validUntil'] != null) {
-      validUntil = DateTime.parse(mMeta['validUntil']);
-    }
-
-    if (mMeta.containsKey('maxVisits') && mMeta['maxVisits'] != null) {
-      maxVisits = mMeta['maxVisits'];
-    }
-
-    ShortUrlMeta meta = ShortUrlMeta._(validSince, validUntil, maxVisits);
+    
+    ShortUrlMeta meta = ShortUrlMeta.fromJson(mMeta);
 
     List<dynamic> lstRawTags = mJson['tags'];
     List<String> lstTags = lstRawTags.map((t) => '$t').toList();
@@ -46,16 +33,4 @@ class ShortUrl {
   @override
   String toString() =>
       'ShortUrl{code=$shortCode;shortUrl=$shortUrl;longUrl=$longUrl;created=$dateCreated;visits=$visitsCount;tags=$tags;meta=$meta}';
-}
-
-class ShortUrlMeta {
-  final DateTime validSince;
-  final DateTime validUntil;
-  final int maxVisits;
-
-  ShortUrlMeta._(this.validSince, this.validUntil, this.maxVisits);
-
-  @override
-  String toString() =>
-      'ShortUrlMeta{validSince=$validSince;validUntil=$validUntil;maxVisits=$maxVisits}';
 }
