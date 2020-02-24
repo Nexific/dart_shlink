@@ -3,6 +3,7 @@
 - List short URL's
 - List tags
 - Add tags
+- Rename tag
 
 ## 0.2.0
 

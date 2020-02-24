@@ -271,4 +271,29 @@ class Shlink {
         .map((t) => t.toString())
         .toList();
   }
+
+  /// Rename a tag from [oldName] to [newName]
+  Future<bool> renameTag(String oldName, String newName) async {
+    String sUrl = '$_url$_API_PATH/tags';
+
+    Map<String, dynamic> mJson = {'oldName': oldName, 'newName': newName};
+
+    HttpClientRequest request = await HttpClient().putUrl(Uri.parse(sUrl))
+      ..headers.contentType = ContentType.json
+      ..headers.set(_HEADER_API_KEY, _apiKey)
+      ..write(jsonEncode(mJson));
+
+    HttpClientResponse response = await request.close();
+
+    if (response.statusCode == 204) {
+      return true;
+    }
+
+    if (response.statusCode == 404) {
+      return false;
+    }
+
+    String sBody = await utf8.decoder.bind(response).single;
+    throw ShlinkException.fromJson(response.statusCode, sBody);
+  }
 }
