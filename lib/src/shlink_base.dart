@@ -5,6 +5,8 @@ import 'shlink_exception.dart';
 import 'dto/create_short_url.dart';
 import 'dto/meta.dart';
 import 'dto/short_url.dart';
+import 'enums/order_field.dart';
+import 'extension/datetime.dart';
 
 class Shlink {
   static const _API_PATH = '/rest/v1';
@@ -141,5 +143,85 @@ class Shlink {
 
     String sBody = await utf8.decoder.bind(response).single;
     throw ShlinkException.fromJson(response.statusCode, sBody);
+  }
+
+  /// List Short URLs
+  ///
+  /// [searchTerm]: Search in Long URL or Short Code
+  /// [tags]: Filter by Tags
+  /// [orderBy]: Sort output
+  /// [startDate]: Begin Date
+  /// [endDate]: End Date
+  Future<List<ShortUrl>> list(
+      {String searchTerm,
+      List<String> tags,
+      OrderField orderBy,
+      DateTime startDate,
+      DateTime endDate}) async {
+    return _list(1, searchTerm, tags, orderBy, startDate, endDate);
+  }
+
+  /// Internal List method
+  Future<List<ShortUrl>> _list(int iPage, String searchTerm, List<String> tags,
+      OrderField orderBy, DateTime startDate, DateTime endDate) async {
+    String sUrl = '$_url$_API_PATH/short-urls?page=$iPage';
+
+    // Search Term
+    if (searchTerm != null && searchTerm.isNotEmpty) {
+      sUrl += '&searchTerm=${Uri.encodeQueryComponent(searchTerm)}';
+    }
+
+    // Tags
+    if (tags != null && tags.isNotEmpty) {
+      for (String sTag in tags) {
+        sUrl += '&tags[]=${Uri.encodeQueryComponent(sTag)}';
+      }
+    }
+
+    // Order By
+    if (orderBy != null) {
+      sUrl += '&orderBy=${orderBy.toString().split('.').last}';
+    }
+
+    // Start Date
+    if (startDate != null) {
+      sUrl +=
+          '&startDate=${Uri.encodeQueryComponent(startDate.toIso8601StringShlink())}';
+    }
+
+    // End Date
+    if (endDate != null) {
+      sUrl +=
+          'endDate=${Uri.encodeQueryComponent(endDate.toIso8601StringShlink())}';
+    }
+
+    HttpClientRequest request = await HttpClient().getUrl(Uri.parse(sUrl))
+      ..headers.contentType = ContentType.json
+      ..headers.set(_HEADER_API_KEY, _apiKey);
+
+    HttpClientResponse response = await request.close();
+    String sBody = await utf8.decoder.bind(response).single;
+
+    if (response.statusCode != 200) {
+      throw ShlinkException.fromJson(response.statusCode, sBody);
+    }
+
+    List<ShortUrl> lstShortUrls = <ShortUrl>[];
+
+    Map<String, dynamic> mJson = jsonDecode(sBody);
+    Map<String, dynamic> mShortUrls = mJson['shortUrls'];
+
+    List<dynamic> lstData = mShortUrls['data'];
+    for (dynamic data in lstData) {
+      lstShortUrls.add(ShortUrl.fromJson(data));
+    }
+
+    Map<String, dynamic> mPagination = mShortUrls['pagination'];
+    if (mPagination['pagesCount'] > mPagination['currentPage']) {
+      lstShortUrls.addAll(await _list(
+          iPage + 1, searchTerm, tags, orderBy, startDate, endDate));
+    }
+
+    return lstShortUrls;
   }
 }
