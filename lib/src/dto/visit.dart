@@ -1,5 +1,3 @@
-import 'package:shlink/shlink.dart';
-
 class Visit {
   final String referer;
   final DateTime date;
