@@ -1,6 +1,7 @@
 ## 0.3.0
 
 - List short URL's
+- List tags
 
 ## 0.2.0
 

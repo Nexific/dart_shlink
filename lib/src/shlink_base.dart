@@ -224,4 +224,26 @@ class Shlink {
 
     return lstShortUrls;
   }
+
+  /// List all Tags
+  Future<List<String>> listTags() async {
+    String sUrl = '$_url$_API_PATH/tags';
+
+    HttpClientRequest request = await HttpClient().getUrl(Uri.parse(sUrl))
+      ..headers.contentType = ContentType.json
+      ..headers.set(_HEADER_API_KEY, _apiKey);
+
+    HttpClientResponse response = await request.close();
+    String sBody = await utf8.decoder.bind(response).single;
+
+    if (response.statusCode != 200) {
+      throw ShlinkException.fromJson(response.statusCode, sBody);
+    }
+
+    Map<String, dynamic> mJson = jsonDecode(sBody);
+
+    return (mJson['tags']['data'] as List<dynamic>)
+        .map((t) => t.toString())
+        .toList();
+  }
 }
