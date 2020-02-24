@@ -91,6 +91,34 @@ class Shlink {
     throw ShlinkException.fromJson(response.statusCode, sBody);
   }
 
+  /// Update the Tags of the [shortCode] with [lstTags]
+  Future<List<String>> updateTags(
+      String shortCode, List<String> lstTags) async {
+    String sUrl = '$_url$_API_PATH/short-urls/$shortCode/tags';
+    if (_domain != null && _domain.isNotEmpty) {
+      sUrl += '?domain=$_domain';
+    }
+
+    Map<String, dynamic> mJson = {'tags': lstTags};
+
+    HttpClientRequest request = await HttpClient().putUrl(Uri.parse(sUrl))
+      ..headers.contentType = ContentType.json
+      ..headers.set(_HEADER_API_KEY, _apiKey)
+      ..write(jsonEncode(mJson));
+
+    HttpClientResponse response = await request.close();
+    String sBody = await utf8.decoder.bind(response).single;
+
+    if (response.statusCode == 200) {
+      Map<String, dynamic> mResponse = jsonDecode(sBody);
+      return (mResponse['tags'] as List<dynamic>)
+          .map((t) => t.toString())
+          .toList();
+    }
+
+    throw ShlinkException.fromJson(response.statusCode, sBody);
+  }
+
   /// Delete [shortCode]
   Future<bool> delete(String shortCode) async {
     String sUrl = '$_url$_API_PATH/short-urls/$shortCode';
