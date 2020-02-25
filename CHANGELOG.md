@@ -1,6 +1,6 @@
 ## 0.5.0
 
--
+- Fixed documentation
 
 ## 0.4.0
 
