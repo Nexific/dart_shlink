@@ -1,6 +1,6 @@
 ## 0.7.0
 
--
+- Fixed Health not exported
 
 ## 0.6.0
 
