@@ -10,14 +10,14 @@ Add the following dependency to the pubspec.yaml
 
 ```yaml
 dependencies:
-  shlink: ^0.5.0
+  shlink: ^0.6.0
 ```
 
 **Development**
 
 ```yaml
 dependencies:
-  shlink: ^0.6.0
+  shlink: ^0.7.0
 ```
 
 NOTE: This version is not yet available on pub.dev

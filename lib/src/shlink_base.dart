@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'dto/health.dart';
 import 'shlink_exception.dart';
 import 'dto/create_short_url.dart';
 import 'dto/meta.dart';
@@ -392,5 +393,23 @@ class Shlink {
     }
 
     return lstVisits;
+  }
+
+  /// Check the Health of the shlink Server
+  Future<Health> checkHealth() async {
+    String sUrl = '$_url$_API_PATH/health';
+    
+    HttpClientRequest request = await HttpClient().getUrl(Uri.parse(sUrl))
+      ..headers.contentType = ContentType.json
+      ..headers.set(_HEADER_API_KEY, _apiKey);
+
+    HttpClientResponse response = await request.close();
+    String sBody = await utf8.decoder.bind(response).single;
+
+    if (response.statusCode != 200) {
+      throw ShlinkException.fromJson(response.statusCode, sBody);
+    }
+
+    return Health.fromJson(jsonDecode(sBody));
   }
 }
